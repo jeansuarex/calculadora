@@ -1,7 +1,14 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
 namespace Calculadora
 {
     public partial class Form1 : Form
     {
+        private string connectionString = @"Server=.\sqlexpress;Database=calculadora;TrustServerCertificate=true;Integrated Security=SSPI;";
+
+
         public Form1()
         {
             InitializeComponent();
@@ -12,10 +19,12 @@ namespace Calculadora
 
         private double currentTotal = 0; // Almacena el resultado acumulado
         private string previousSign = string.Empty; // Almacena el último signo
+        private string operacion_str = "";
 
 
         private void btn_one_Click(object sender, EventArgs e)
         {
+            operacion_str += "1";
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "1";
@@ -28,6 +37,7 @@ namespace Calculadora
 
         private void btn_two_Click(object sender, EventArgs e)
         {
+            operacion_str += "2";
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "2";
@@ -40,6 +50,8 @@ namespace Calculadora
 
         private void btn_three_Click(object sender, EventArgs e)
         {
+            operacion_str += "3";
+
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "3";
@@ -52,6 +64,8 @@ namespace Calculadora
 
         private void btn_four_Click(object sender, EventArgs e)
         {
+            operacion_str += "4";
+
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "4";
@@ -64,6 +78,7 @@ namespace Calculadora
 
         private void btn_five_Click(object sender, EventArgs e)
         {
+            operacion_str += "5";
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "5";
@@ -76,6 +91,7 @@ namespace Calculadora
 
         private void btn_six_Click(object sender, EventArgs e)
         {
+            operacion_str += "6";
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "6";
@@ -100,6 +116,7 @@ namespace Calculadora
 
         private void btn_eight_Click(object sender, EventArgs e)
         {
+            operacion_str += "8";
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "8";
@@ -112,6 +129,8 @@ namespace Calculadora
 
         private void btn_nine_Click(object sender, EventArgs e)
         {
+            operacion_str += "9";
+
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "9";
@@ -119,11 +138,13 @@ namespace Calculadora
             else
             {
                 show_calc.Text += "9";
+
             }
         }
 
         private void btn_zero_Click(object sender, EventArgs e)
         {
+            operacion_str += "0";
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "0";
@@ -139,6 +160,7 @@ namespace Calculadora
             if (show_calc.Text == "0")
             {
                 show_calc.Text = "."; // Reemplaza "0" con "."
+                operacion_str += ".";
             }
             else
             {
@@ -152,6 +174,7 @@ namespace Calculadora
                 }
                 else
                 {
+                    operacion_str += ".";
                     // Si no hay un punto, agregar "." al final del último número
                     show_calc.Text += ".";
                 }
@@ -163,6 +186,7 @@ namespace Calculadora
             // Verifica si hay texto en show_calc
             if (!string.IsNullOrEmpty(show_calc.Text))
             {
+                operacion_str += "x";
                 // Verifica si ya hay un signo anterior
                 if (!string.IsNullOrEmpty(txt_sign.Text))
                 {
@@ -186,6 +210,7 @@ namespace Calculadora
 
         private void btn_plus_Click(object sender, EventArgs e)
         {
+            operacion_str += "+";
             // Verifica si hay texto en show_calc
             if (!string.IsNullOrEmpty(show_calc.Text))
             {
@@ -213,6 +238,7 @@ namespace Calculadora
             // Verifica si hay texto en show_calc
             if (!string.IsNullOrEmpty(show_calc.Text))
             {
+                operacion_str += "-";
                 // Verifica si ya hay un signo anterior
                 if (!string.IsNullOrEmpty(txt_sign.Text))
                 {
@@ -279,6 +305,7 @@ namespace Calculadora
 
                 // Mostrar el resultado en el TextBox
                 show_calc.Text = raiz.ToString();
+                operacion_str += $"sqrt({raiz})";
             }
             else
             {
@@ -295,6 +322,7 @@ namespace Calculadora
             // Verifica si hay texto en show_calc
             if (!string.IsNullOrEmpty(show_calc.Text))
             {
+                operacion_str += "^";
                 // Verifica si ya hay un signo anterior
                 if (!string.IsNullOrEmpty(txt_sign.Text))
                 {
@@ -321,6 +349,7 @@ namespace Calculadora
             txt_sign.Text = string.Empty;
         }
 
+
         private void btn_result_Click(object sender, EventArgs e)
         {
             // Verifica si hay texto en show_calc
@@ -328,17 +357,61 @@ namespace Calculadora
             {
                 // Llama a la función para realizar la operación
                 PerformOperation(double.Parse(show_calc.Text));
-                currentTotal = 0;
+
+                // Obtenemos el resultado
+                string resultado = current_result.Text;
+
                 // Limpiar el texto en show_calc y actualizar txt_sign
                 show_calc.Text = string.Empty;
                 txt_sign.Text = string.Empty; // Opcional: limpiar el signo después de mostrar el resultado
+
+                // Llamar a la función que guarda los datos en la tabla operaciones
+                GuardarOperacionEnBaseDeDatos(operacion_str, resultado, DateTime.Now);
+
+                // Limpiar la operación para futuras operaciones
+                operacion_str = string.Empty;
             }
         }
+
+        private void GuardarOperacionEnBaseDeDatos(string operacion, string resultado, DateTime fecha)
+        {
+            // Establecer la conexión con la base de datos
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                // Crear el comando SQL para insertar la operación
+                string query = "INSERT INTO operaciones (operacion, resultado, fecha_operacion) VALUES (@operacion, @resultado, @fecha)";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Añadir los parámetros al comando
+                    command.Parameters.AddWithValue("@operacion", operacion);
+                    command.Parameters.AddWithValue("@resultado", resultado);
+                    command.Parameters.AddWithValue("@fecha", fecha);
+
+                    // Abrir la conexión
+                    connection.Open();
+
+                    // Ejecutar el comando
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                        MessageBox.Show("Operación guardada correctamente.");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error al guardar la operación: " + ex.Message);
+                    }
+                }
+            }
+        }
+
         private void btn_dividir_Click(object sender, EventArgs e)
         {
             // Verifica si hay texto en show_calc
             if (!string.IsNullOrEmpty(show_calc.Text))
             {
+
+                operacion_str += "/";
                 // Verifica si ya hay un signo anterior
                 if (!string.IsNullOrEmpty(txt_sign.Text))
                 {
@@ -358,7 +431,14 @@ namespace Calculadora
             }
         }
 
+        private void historialbtn_Click(object sender, EventArgs e)
+        {
+            FormHistorial formHistorial = new FormHistorial();
 
+            // Muestra el formulario. Puedes usar Show() o ShowDialog() dependiendo de tu necesidad.
+            formHistorial.Show(); // Abre la ventana de manera no modal
+                                  // formHistorial.ShowDialog(); // Abre la ventana de manera modal (bloquea la ventana anterior hasta que cierres esta)
+        }
 
     }
 }

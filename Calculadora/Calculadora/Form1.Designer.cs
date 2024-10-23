@@ -49,7 +49,7 @@
             btn_dividir = new Button();
             current_result = new TextBox();
             btn_result = new Button();
-            button1 = new Button();
+            historialbtn = new Button();
             txt_sign = new TextBox();
             SuspendLayout();
             // 
@@ -281,14 +281,15 @@
             btn_result.UseVisualStyleBackColor = false;
             btn_result.Click += btn_result_Click;
             // 
-            // button1
+            // historialbtn
             // 
-            button1.Location = new Point(372, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(67, 28);
-            button1.TabIndex = 22;
-            button1.Text = "historial";
-            button1.UseVisualStyleBackColor = true;
+            historialbtn.Location = new Point(372, 12);
+            historialbtn.Name = "historialbtn";
+            historialbtn.Size = new Size(67, 28);
+            historialbtn.TabIndex = 22;
+            historialbtn.Text = "historial";
+            historialbtn.UseVisualStyleBackColor = true;
+            historialbtn.Click += historialbtn_Click;
             // 
             // txt_sign
             // 
@@ -306,7 +307,7 @@
             BackColor = Color.Brown;
             ClientSize = new Size(457, 450);
             Controls.Add(txt_sign);
-            Controls.Add(button1);
+            Controls.Add(historialbtn);
             Controls.Add(current_result);
             Controls.Add(btn_dividir);
             Controls.Add(btn_raiz);
@@ -356,7 +357,7 @@
         private Button btn_dividir;
         private TextBox current_result;
         private Button btn_result;
-        private Button button1;
+        private Button historialbtn;
         private TextBox txt_sign;
     }
 }
