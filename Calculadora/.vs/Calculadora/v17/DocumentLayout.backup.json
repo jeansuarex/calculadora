@@ -23,14 +23,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Form1.cs [Design]",
+              "Title": "Form1.cs [Dise\u00F1o]",
               "DocumentMoniker": "C:\\Users\\jeans\\source\\repos\\Calculadora\\Calculadora\\Form1.cs",
               "RelativeDocumentMoniker": "Calculadora\\Form1.cs",
-              "ToolTip": "C:\\Users\\jeans\\source\\repos\\Calculadora\\Calculadora\\Form1.cs [Design]",
-              "RelativeToolTip": "Calculadora\\Form1.cs [Design]",
+              "ToolTip": "C:\\Users\\jeans\\source\\repos\\Calculadora\\Calculadora\\Form1.cs [Dise\u00F1o]",
+              "RelativeToolTip": "Calculadora\\Form1.cs [Dise\u00F1o]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-22T23:55:19.771Z",
-              "EditorCaption": " [Design]"
+              "EditorCaption": " [Dise\u00F1o]"
             }
           ]
         }
